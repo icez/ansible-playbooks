@@ -1,0 +1,6 @@
+---
+- selinux: state=disabled
+  when: ansible_os_family == "RedHat"
+  ignore_errors: True
+#- lineinfile: dest=/etc/selinux/config regexp=^SELINUX= line=SELINUX=disabled
+

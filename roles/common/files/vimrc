@@ -1,0 +1,8 @@
+filetype plugin indent on
+set ts=4 sw=4 sts=4 noexpandtab
+set number
+set incsearch hlsearch
+
+nnoremap <CR> :noh<CR>
+
+

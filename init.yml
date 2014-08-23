@@ -1,0 +1,19 @@
+---
+- hosts: "{{ hosts }}"
+  gather_facts: no
+  tasks:
+  - raw: "yum -y install libselinux-python python-paramiko python libyaml PyYAML python-babel python-httplib2 python-jinja2 python-keyczar python-pyasn1 rsync python-simplejson"
+  - lineinfile: dest=/etc/ssh/sshd_config regexp=^PermitRootLogin insertafter="^#PermitRootLogin " line="PermitRootLogin without-password"
+    register: ssh_config
+  - authorized_key: user=root key="{{ lookup('file', 'data/authorized_keys') }}"
+  - authorized_key: user=root key="{{ lookup('file', 'data/authorized_keys.unused') }}" state=absent
+    ignore_errors: True
+  - authorized_key: user=icez key="{{ lookup('file', 'data/authorized_keys.unused') }}" state=absent
+    ignore_errors: True
+  - service: name="sshd" state="restarted"
+    when: ssh_config.changed
+    ignore_errors: True
+  - service: name="ssh" state="restarted"
+    when: ssh_config.changed
+    ignore_errors: True
+

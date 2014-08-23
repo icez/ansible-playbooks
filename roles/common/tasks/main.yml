@@ -1,0 +1,69 @@
+---
+- yum: pkg={{ item }} state=present
+  with_items:
+  - autofs
+  - iotop
+  - dstat
+  - kernel-headers
+  - sysstat
+  - glances
+  - bash-completion
+  - libselinux-python
+  - vim-enhanced
+  - nmap
+  - git
+  - iptraf
+  - tmux
+  - screen
+  - rsync
+  - wget
+  - strace
+  - logrotate
+  when: ansible_os_family == "RedHat"
+- yum: pkg={{ item }} state=absent
+  with_items:
+  - yum-updatesd
+  - logwatch
+  when: ansible_os_family == "RedHat"
+#  ignore_errors: true
+- apt: pkg={{ item }} state=present
+  with_items:
+  - locales-all
+  - git
+  - cron
+  - vim-nox
+  - sysstat
+  - dstat
+  - jnettop
+  - bash-completion
+  - iotop
+  - iftop
+  - tmux
+  - screen
+  - rsync
+  - curl
+  - ipmitool
+  - strace
+  - ntp
+  - ntpdate
+  - logrotate
+  - sudo
+  - debconf-utils
+  - lsb-release
+  - sasl2-bin
+  - xinetd
+  - bind9-host
+  - less
+  - nmap
+  - sudo
+  when: ansible_os_family == "Debian"
+
+- lineinfile: dest=/root/.bashrc regexp="^export\ HISTTIMEFORMAT.*$" state=present line="export HISTTIMEFORMAT=\"%d/%m/%y %T | \""
+- lineinfile: dest=/root/.bashrc regexp="^alias.*top.*$" state=present line="alias top='top -M'"
+  when: ansible_os_family == "RedHat"
+- lineinfile: dest=/root/.bashrc regexp="^export PS1=.*$" state=present line="export PS1='\[\e[00;37m\][\[\e[0m\]\[\e[01;37m\]\u@\h\[\e[0m\]\[\e[00;37m\] \w]\\$ \[\e[0m\]'"
+- sysctl: name=vm.swappiness value=0 state=present sysctl_set=yes
+  ignore_errors: true
+- copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: vimrc, dest: /root/.vimrc }

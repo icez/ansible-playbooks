@@ -1,0 +1,16 @@
+---
+- shell: "wget -q -O - http://linux.dell.com/repo/hardware/latest/bootstrap.cgi | bash"
+  when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat"
+- yum: name={{item}} state=latest
+  with_items:
+    - net-snmp
+    - net-snmp-utils
+    - srvadmin-all
+  when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat"
+- lineinfile: dest=/etc/snmp/snmpd.conf line="rocommunity thzzabbix 202.162.79.132"
+  register: snmpd_config
+- service: name="snmpd" state="restarted" enabled=yes
+  when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat" and snmpd_config.changed
+- service: name="dataeng" state="started" enabled=yes
+  when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat"
+

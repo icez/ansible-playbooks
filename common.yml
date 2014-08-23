@@ -1,0 +1,9 @@
+---
+- hosts: "{{ hosts }}"
+  sudo: False
+  remote_user: root
+  roles:
+    - selinux
+    - repo-epel
+    - common
+    - ntp

@@ -1,0 +1,25 @@
+---
+- yum: name={{ item }} state=present
+  with_items:
+    - ntpdate
+    - ntp
+  when: ansible_os_family == "RedHat"
+  ignore_errors: yes
+- command: service ntp status
+  register: ntp_running
+  ignore_errors: True
+  when: ansible_os_family == "Debian"
+- command: service ntpd status
+  register: ntp_running
+  ignore_errors: True
+  when: ansible_os_family == "RedHat"
+- command: ntpdate pool.ntp.org
+  when: ntp_running|failed
+  ignore_errors: True
+- service: name=ntp state=started enabled=yes
+  when: ansible_os_family == "Debian"
+- service: name=ntpd state=started enabled=yes
+  when: ansible_os_family == "RedHat"
+- file: path=/etc/localtime state=link src=/usr/share/zoneinfo/Asia/Bangkok force=yes
+  when: ansible_os_family == "RedHat"
+
