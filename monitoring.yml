@@ -4,8 +4,8 @@
   remote_user: root
   vars:
    client_name: "{{ inventory_hostname }}"
-   server_ip: "10.127.131.24"
    remote_commands: "1"
   roles:
+    - repo-atomic
     - zabbix2
     - dellmonitoring

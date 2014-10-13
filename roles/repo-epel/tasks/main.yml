@@ -1,12 +1,4 @@
 ---
-- yum: name="http://mirrors.thzhost.com/epel/6/x86_64/epel-release-6-8.noarch.rpm" state=present
-  when: ansible_os_family == "RedHat" and ansible_distribution_version|int == 6
-  tags:
-  - packages
-  - repo
-- yum: name="http://mirrors.thzhost.com/epel/5/x86_64/epel-release-5-4.noarch.rpm" state=present
-  when: ansible_os_family == "RedHat" and ansible_distribution_version|int == 5
-  tags:
-  - packages
-  - repo
-
+- yum: name="epel-release" state=latest
+  when: ansible_os_family == "RedHat"
+  tags: [ "packages", "repo", "repository" ]

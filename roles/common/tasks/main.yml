@@ -1,12 +1,13 @@
 ---
-- yum: pkg={{ item }} state=present
+- yum: pkg={{ item }} state=latest
   with_items:
+  - bash
   - autofs
   - iotop
   - dstat
   - kernel-headers
   - sysstat
-  - glances
+#  - glances
   - bash-completion
   - libselinux-python
   - vim-enhanced
@@ -23,10 +24,9 @@
 - yum: pkg={{ item }} state=absent
   with_items:
   - yum-updatesd
-  - logwatch
   when: ansible_os_family == "RedHat"
 #  ignore_errors: true
-- apt: pkg={{ item }} state=present
+- apt: pkg={{ item }} state=latest
   with_items:
   - locales-all
   - git
@@ -42,6 +42,7 @@
   - screen
   - rsync
   - curl
+  - bash
   - ipmitool
   - strace
   - ntp
@@ -59,11 +60,16 @@
   when: ansible_os_family == "Debian"
 
 - lineinfile: dest=/root/.bashrc regexp="^export\ HISTTIMEFORMAT.*$" state=present line="export HISTTIMEFORMAT=\"%d/%m/%y %T | \""
-- lineinfile: dest=/root/.bashrc regexp="^alias.*top.*$" state=present line="alias top='top -M'"
-  when: ansible_os_family == "RedHat"
-- lineinfile: dest=/root/.bashrc regexp="^export PS1=.*$" state=present line="export PS1='\[\e[00;37m\][\[\e[0m\]\[\e[01;37m\]\u@\h\[\e[0m\]\[\e[00;37m\] \w]\\$ \[\e[0m\]'"
+
+- lineinfile: dest=/root/.bashrc regexp="^alias.*top.*$" state=absent line="alias top='top -M'"
+
+- lineinfile: dest=/root/.bashrc regexp="^export PS1=.*$" state=present line="export PS1='\[\e[00;37m\][\[\e[0m\]\[\e[01;37m\]\u@\h\[\e[0m\]\[\e[00;37m\] \w]# \[\e[0m\]'"
+
 - sysctl: name=vm.swappiness value=0 state=present sysctl_set=yes
+  when: ansible_virtualization_type != "openvz"
   ignore_errors: true
+
 - copy: src={{ item.src }} dest={{ item.dest }}
   with_items:
     - { src: vimrc, dest: /root/.vimrc }
+

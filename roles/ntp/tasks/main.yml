@@ -3,23 +3,29 @@
   with_items:
     - ntpdate
     - ntp
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and ansible_virtualization_type != "openvz"
   ignore_errors: yes
+
 - command: service ntp status
   register: ntp_running
   ignore_errors: True
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and ansible_virtualization_type != "openvz"
+
 - command: service ntpd status
   register: ntp_running
   ignore_errors: True
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and ansible_virtualization_type != "openvz"
+
 - command: ntpdate pool.ntp.org
-  when: ntp_running|failed
+  when: ntp_running|failed and ansible_virtualization_type != "openvz"
   ignore_errors: True
+
 - service: name=ntp state=started enabled=yes
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and ansible_virtualization_type != "openvz"
+
 - service: name=ntpd state=started enabled=yes
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and ansible_virtualization_type != "openvz"
+
 - file: path=/etc/localtime state=link src=/usr/share/zoneinfo/Asia/Bangkok force=yes
   when: ansible_os_family == "RedHat"
 

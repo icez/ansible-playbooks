@@ -2,8 +2,9 @@
 - hosts: "{{ hosts }}"
   gather_facts: no
   tasks:
-  - raw: "yum -y install libselinux-python python-paramiko python libyaml PyYAML python-babel python-httplib2 python-jinja2 python-keyczar python-pyasn1 rsync python-simplejson"
+  - raw: "yum -y --disablerepo=\\* --enablerepo=base,updates install libselinux-python python-paramiko python libyaml PyYAML python-babel python-httplib2 python-jinja2 python-keyczar python-pyasn1 rsync python-simplejson"
   - lineinfile: dest=/etc/ssh/sshd_config regexp=^PermitRootLogin insertafter="^#PermitRootLogin " line="PermitRootLogin without-password"
+    when: nopasswordlogin|default(False) == True
     register: ssh_config
   - authorized_key: user=root key="{{ lookup('file', 'data/authorized_keys') }}"
   - authorized_key: user=root key="{{ lookup('file', 'data/authorized_keys.unused') }}" state=absent
