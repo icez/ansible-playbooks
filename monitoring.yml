@@ -8,4 +8,4 @@
   roles:
     - repo-atomic
     - zabbix2
-    - dellmonitoring
+#    - dellmonitoring

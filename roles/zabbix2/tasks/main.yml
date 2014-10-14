@@ -26,6 +26,9 @@
   when: ansible_os_family == "Debian"
   tags: [ "zabbix-agent", "monitoring" ]
   
+- lineinfile: dest="/etc/yum.conf" line="exclude=zabbix-*2.4.*" state=present
+  tags: [ "zabbix-agent", "monitoring" ]
+
 - yum: name={{item}} state=absent
   with_items :
     - zabbix20-agent

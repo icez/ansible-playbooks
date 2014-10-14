@@ -7,8 +7,9 @@
     - net-snmp-utils
     - srvadmin-all
   when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat"
-- lineinfile: dest=/etc/snmp/snmpd.conf line="rocommunity thzzabbix 202.162.79.132"
+- lineinfile: dest=/etc/snmp/snmpd.conf line="rocommunity thzzabbix {{ zabbix_server }}"
   register: snmpd_config
+  when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat"
 - service: name="snmpd" state="restarted" enabled=yes
   when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat" and snmpd_config.changed
 - service: name="dataeng" state="started" enabled=yes
