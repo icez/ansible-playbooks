@@ -1,0 +1,11 @@
+---
+- yum: name="http://mirrors.thzhost.com/atomic/centos/7/x86_64/RPMS/atomic-release-1.0-19.el7.art.noarch.rpm" state=present
+  when: ansible_os_family == "RedHat" and ansible_distribution_version|int == 7
+  tags: [ "atomic", "packages", "repo" ]
+- yum: name="http://mirrors.thzhost.com/atomic/centos/6/x86_64/RPMS/atomic-release-1.0-19.el6.art.noarch.rpm" state=present
+  when: ansible_os_family == "RedHat" and ansible_distribution_version|int == 6
+  tags: [ "atomic", "packages", "repo" ]
+- yum: name="http://mirrors.thzhost.com/atomic/centos/5/x86_64/RPMS/atomic-release-1.0-19.el5.art.noarch.rpm" state=present
+  when: ansible_os_family == "RedHat" and ansible_distribution_version|int == 5
+  tags: [ "atomic", "packages", "repo" ]
+

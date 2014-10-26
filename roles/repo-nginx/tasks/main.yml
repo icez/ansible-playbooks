@@ -1,0 +1,2 @@
+---
+- copy: src="data/repo-nginx/yum.repos.d/nginx.repo" dest="/etc/yum.repos.d/nginx.repo"

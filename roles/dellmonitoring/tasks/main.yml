@@ -1,17 +1,47 @@
 ---
 - shell: "wget -q -O - http://linux.dell.com/repo/hardware/latest/bootstrap.cgi | bash"
   when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat"
+  tags: [ "dell", "monitoring" ]
 - yum: name={{item}} state=latest
   with_items:
     - net-snmp
     - net-snmp-utils
     - srvadmin-all
   when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat"
-- lineinfile: dest=/etc/snmp/snmpd.conf line="rocommunity thzzabbix {{ zabbix_server }}"
-  register: snmpd_config
-  when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat"
-- service: name="snmpd" state="restarted" enabled=yes
-  when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat" and snmpd_config.changed
-- service: name="dataeng" state="started" enabled=yes
-  when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "RedHat"
+  tags: [ "dell", "monitoring" ]
 
+- apt_key: url="http://mirrors.thzhost.com/debian-dellomsa.key" state=present
+  when: ansible_os_family == "Debian" and ansible_lsb.major_release >= 7 and ansible_system_vendor == "Dell Inc."
+  tags: [ "dell", "monitoring" ]
+- apt_repository: repo="deb http://mirrors.thzhost.com/debian-dellomsa/ {{ hostvars[inventory_hostname]['ansible_lsb']['codename'] }} openmanage" state=present
+  when: ansible_os_family == "Debian" and ansible_lsb.major_release >= 7 and ansible_system_vendor == "Dell Inc."
+  tags: [ "dell", "monitoring" ]
+- apt: pkg="{{ item }}" state=latest
+  with_items :
+    - snmpd
+    - srvadmin-all
+  when: ansible_os_family == "Debian" and ansible_system_vendor == "Dell Inc."
+  tags: [ "dell", "monitoring" ]
+
+- lineinfile: dest=/etc/snmp/snmpd.conf line="rocommunity thzzabbix {{ zabbix_server }}" state=present
+  notify: restart snmpd
+  when: ansible_system_vendor == "Dell Inc."
+  tags: [ "dell", "monitoring" ]
+
+- lineinfile: dest=/etc/snmp/snmpd.conf line="smuxpeer .1.3.6.1.4.1.674.10892.1" state=present
+  notify: restart snmpd
+  when: ansible_system_vendor == "Dell Inc."
+  tags: [ "dell", "monitoring" ]
+
+- lineinfile: dest=/etc/default/snmpd line="SNMPDOPTS='-Lsd -Lf /dev/null -u snmp -g snmp -p /var/run/snmpd.pid'" regexp="^SNMPDOPTS=" state=present
+  notify: restart snmpd
+  when: ansible_system_vendor == "Dell Inc." and ansible_os_family == "Debian"
+  tags: [ "dell", "monitoring" ]
+
+- service: name="snmpd" enabled=yes
+  when: ansible_system_vendor == "Dell Inc."
+  tags: [ "dell", "monitoring" ]
+
+- service: name="dataeng" state="started" enabled=yes
+  when: ansible_system_vendor == "Dell Inc." 
+  tags: [ "dell", "monitoring" ]

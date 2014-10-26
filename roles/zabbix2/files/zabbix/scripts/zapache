@@ -1,0 +1,63 @@
+#! /bin/bash
+#
+# Name: zapache
+#
+# Checks Apache activity.
+#
+#
+
+zapachever="1.1"
+rval=0
+VAR=$(wget --quiet -O - http://localhost/server-status?auto)
+
+case $1 in
+'TotalAccesses')
+	echo "$VAR"|grep "Total Accesses:"|awk '{print $3}'
+	rval=$?;;
+'TotalKBytes')
+	echo "$VAR"|grep "Total kBytes:"|awk '{print $3}'
+	rval=$?;;
+'Uptime')
+	echo "$VAR"|grep "Uptime:"|awk '{print $2}'
+	rval=$?;;
+'ReqPerSec')
+	echo "$VAR"|grep "ReqPerSec:"|awk '{print $2}'
+	rval=$?;;
+'BytesPerSec')
+	echo "$VAR"|grep "BytesPerSec:"|awk '{print $2}'
+	rval=$?;;
+'BytesPerReq')
+	echo "$VAR"|grep "BytesPerReq:"|awk '{print $2}'
+	rval=$?;;
+'BusyWorkers')
+	echo "$VAR"|grep "BusyWorkers:"|awk '{print $2}'
+	rval=$?;;
+'IdleWorkers')
+	echo "$VAR"|grep "IdleWorkers:"|awk '{print $2}'
+	rval=$?;;
+'version')
+	echo "$zapachever"
+        exit $rval;;
+*)
+	echo "zapache version: $zapachever"
+        echo "usage:"
+        echo "    $0 TotalAccesses               -- Check total accesses."
+        echo "    $0 TotalKBytes                 -- Check total KBytes."
+	echo "    $0 Uptime                      -- Check uptime."
+	echo "    $0 ReqPerSec                   -- Check requests per second."
+	echo "    $0 BytesPerSec                 -- Check Bytes per second."
+	echo "    $0 BytesPerReq                 -- Check Bytes per request."
+	echo "    $0 BusyWorkers                 -- Check busy workers."
+	echo "    $0 IdleWorkers                 -- Check idle workers."
+	echo "    $0 version                     -- Version of this script."
+	exit $rval;;
+esac
+
+if [ "$rval" -ne 0 ]; then
+  	echo "ZBX_NOTSUPPORTED"
+fi
+
+exit $rval
+
+#
+# end zapache

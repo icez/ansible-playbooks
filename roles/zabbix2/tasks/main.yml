@@ -27,6 +27,7 @@
   tags: [ "zabbix-agent", "monitoring" ]
   
 - lineinfile: dest="/etc/yum.conf" line="exclude=zabbix-*2.4.*" state=present
+  when: ansible_os_family == "RedHat"
   tags: [ "zabbix-agent", "monitoring" ]
 
 - yum: name={{item}} state=absent

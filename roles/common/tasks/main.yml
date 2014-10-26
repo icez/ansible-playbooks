@@ -12,6 +12,7 @@
   - libselinux-python
   - vim-enhanced
   - nmap
+  - pigz
   - git
   - iptraf
   - tmux
@@ -58,6 +59,15 @@
   - nmap
   - sudo
   when: ansible_os_family == "Debian"
+
+- lineinfile: dest=/etc/ssh/sshd_config regexp=^PermitRootLogin insertafter="^#PermitRootLogin " line="PermitRootLogin without-password"
+  when: nopasswordlogin|default(False) == True
+  register: ssh_config
+- authorized_key: user=root key="{{ lookup('file', 'data/authorized_keys') }}"
+- authorized_key: user=root key="{{ lookup('file', 'data/authorized_keys.unused') }}" state=absent
+  ignore_errors: True
+- authorized_key: user=icez key="{{ lookup('file', 'data/authorized_keys.unused') }}" state=absent
+  ignore_errors: True
 
 - lineinfile: dest=/root/.bashrc regexp="^export\ HISTTIMEFORMAT.*$" state=present line="export HISTTIMEFORMAT=\"%d/%m/%y %T | \""
 

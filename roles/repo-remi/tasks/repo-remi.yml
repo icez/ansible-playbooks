@@ -1,0 +1,5 @@
+---
+- yum: name="http://rpms.famillecollet.com/enterprise/remi-release-6.rpm" state=present
+  when: ansible_os_family == "RedHat" and ansible_distribution_version|int == 6
+- yum: name="http://rpms.famillecollet.com/enterprise/remi-release-5.rpm" state=present
+  when: ansible_os_family == "RedHat" and ansible_distribution_version|int == 5

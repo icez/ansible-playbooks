@@ -1,0 +1,6 @@
+---
+- hosts: "{{ hosts }}"
+  sudo: False
+  remote_user: root
+  roles:
+    - repo-atomic
